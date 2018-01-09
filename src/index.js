@@ -93,7 +93,7 @@ class Board extends React.Component {
       squares[i] = winner;
     }
     if (canMove(squares[j])) {
-      $('.square-'+j)[0].style.background = 'rgba(200, 54, 54, 0.5)';
+      $('.square-'+j)[0].style.background = 'rgba(200, 54, 54, 0.6)';
     }
     this.setState({
       squares: squares,
@@ -141,7 +141,7 @@ class Board extends React.Component {
     }
     return (
       <React.Fragment>
-        {status}
+        <div className="status">{status}</div>
         <div className="board">
           <div className="board-row">
             {this.renderSquare(0)}
