@@ -1,5 +1,5 @@
 body {
-  font: 14px "Century Gothic", Futura, sans-serif;
+  font: 20px "Century Gothic", Futura, sans-serif;
   margin: 20px;
 }
 
@@ -23,6 +23,7 @@ ol, ul {
 
 .square {
   margin: 10px;
+  padding: 5px;
 }
 
 .cell {

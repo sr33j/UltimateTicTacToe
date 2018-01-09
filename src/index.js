@@ -1,11 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-
+import $ from "jquery";
 
 function Cell(props){
+  var classStr = "cell cell-"+props.i+'-'+props.j;
   return (
-    <button className="cell" onClick={() => props.handleClick(props.i,props.j)}>
+    <button className={classStr} onClick={() => props.handleClick(props.i,props.j)}>
       {props.value}
     </button>
   );
@@ -21,10 +22,10 @@ class Square extends React.Component {
             handleClick={this.props.handleClick.bind(this)}/>
     );
   }
-
   render() {
+    var classStr = "square square-"+this.props.whichSquare;
     return (
-      <div className="square">
+      <div className={classStr}>
         <div className="square-row">
           {this.renderCell(0)}
           {this.renderCell(1)}
@@ -69,6 +70,7 @@ class Board extends React.Component {
       winSquareO: winSquareO,
       winSquareX: winSquareX,
       xIsNext: true,
+      prevJ: -1,
     };
   }
 
@@ -76,17 +78,27 @@ class Board extends React.Component {
     var squares = this.state.squares.map(function(arr) {
         return arr.slice();
     });
+    if (this.state.prevJ !== i && this.state.prevJ !== -1 && canMove(squares[this.state.prevJ])) {
+      return;
+    }
     if (calculateWinner(squares) || typeof squares[i] === 'string' || squares[i][j]) {
       return;
+    }
+    if (this.state.prevJ !== -1 ) {
+      $('.square-'+this.state.prevJ)[0].style.background = "";
     }
     squares[i][j] = this.state.xIsNext ? 'X' : 'O';
     const winner = calculateWinner(squares[i]);
     if (winner) {
       squares[i] = winner;
     }
+    if (canMove(squares[j])) {
+      $('.square-'+j)[0].style.background = 'rgba(200, 54, 54, 0.5)';
+    }
     this.setState({
       squares: squares,
       xIsNext: !this.state.xIsNext,
+      prevJ: j,
     });
   }
 
@@ -107,7 +119,6 @@ class Board extends React.Component {
       );
     }
     else {
-      // console.log(this.state.squares[i]);
       return (
         <Square value={this.state.squares[i]} 
                 whichSquare={i} 
@@ -122,7 +133,7 @@ class Board extends React.Component {
     if (winner) {
       status = 'Winner: ' + winner;
     }
-    else if (tie(this.state.squares)) {
+    else if (!canMove(this.state.squares)) {
       status = "Tie Game"
     }
     else {
@@ -158,17 +169,24 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
-function tie(arr) {
-  for (var i = 0; i < arr.length; i++) {
-    if (arr[i].constructor === Array) {
-      for (var j = 0; j < arr[i].length; j++) {
-        if (arr[i][j] === null) {
-          return false;
-        }
+function canMove(arr) {
+  console.log(arr);
+  if (Array.isArray(arr)) {
+    for (var i = 0; i < 9; i++) {
+      if (canMove(arr[i])) {
+        return true;
       }
     }
+    return false;
   }
-  return true;
+  else {
+    if (arr === null) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
 }
 
 function calculateWinner(arr) {
